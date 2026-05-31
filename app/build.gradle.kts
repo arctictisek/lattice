@@ -49,12 +49,12 @@ tasks.register<JavaExec>("generateViz") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
     mainClass = "com.fran.latticelines.VisualizeKt"
-    workingDir = rootProject.projectDir
+    workingDir = rootProject.file("docs")
 }
 
 tasks.register<JavaExec>("generateCurve") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
     mainClass = "com.fran.latticelines.CurveVisualizeKt"
-    workingDir = rootProject.projectDir
+    workingDir = rootProject.file("docs")
 }
