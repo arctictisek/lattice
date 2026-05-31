@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lattice Lines — Documentation</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      color-scheme: dark;
+      --bg:      #0f172a;
+      --surface: #1e293b;
+      --raised:  #243044;
+      --border:  #334155;
+      --border2: #1e2d40;
+      --text:    #f1f5f9;
+      --muted:   #94a3b8;
+      --faint:   #475569;
+      --blue:    #3b82f6;
+      --blue-d:  #60a5fa;
+      --blue-l:  #1d3a5f;
+      --green:   #4ade80;
+      --amber:   #fbbf24;
+      --sans: system-ui, -apple-system, sans-serif;
+      --mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+      --nav-w: 240px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans); font-size: 15px; line-height: 1.7;
+      color: var(--text); background: var(--bg);
+      display: flex; min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      width: var(--nav-w); flex-shrink: 0;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+      background: var(--surface); border-right: 1px solid var(--border);
+      padding: 28px 0 40px;
+    }
+    .nav-logo {
+      padding: 0 20px 20px;
+      font-size: 15px; font-weight: 700; letter-spacing: -.02em; color: var(--text);
+      border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .nav-logo span { color: var(--blue-d); }
+    nav a {
+      display: block; padding: 5px 20px;
+      font-size: 13px; color: var(--muted); text-decoration: none;
+      border-left: 2px solid transparent; transition: color .15s, border-color .15s;
+    }
+    nav a:hover { color: var(--text); }
+    nav a.active { color: var(--blue-d); border-left-color: var(--blue); }
+    .nav-section {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--faint);
+      padding: 16px 20px 4px;
+    }
+
+    /* ── Content ── */
+    main { flex: 1; min-width: 0; padding: 56px 64px 100px; max-width: 860px; }
+
+    section { padding-top: 56px; }
+    section:first-child { padding-top: 0; }
+
+    h1 { font-size: 32px; font-weight: 700; letter-spacing: -.03em; line-height: 1.2; margin-bottom: 12px; }
+    h1 .sub { display: block; font-size: 16px; font-weight: 400; color: var(--muted); margin-top: 6px; letter-spacing: 0; }
+    h2 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; margin: 40px 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 16px; font-weight: 600; margin: 28px 0 10px; color: var(--blue-d); }
+    p  { margin-bottom: 14px; color: var(--muted); }
+    p strong, li strong { color: var(--text); font-weight: 600; }
+    a  { color: var(--blue-d); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    ul, ol { padding-left: 20px; margin-bottom: 14px; }
+    li { color: var(--muted); margin-bottom: 4px; }
+
+    /* ── Code ── */
+    code {
+      font-family: var(--mono); font-size: 13px;
+      background: var(--raised); color: #93c5fd;
+      padding: 1px 6px; border-radius: 4px;
+      border: 1px solid var(--border2);
+    }
+    pre {
+      background: #0d1a2e; border: 1px solid var(--border);
+      border-radius: 8px; padding: 18px 20px; overflow-x: auto;
+      margin: 16px 0 20px;
+    }
+    pre code {
+      background: none; border: none; padding: 0;
+      font-size: 13px; color: var(--text); line-height: 1.6;
+    }
+    .kw  { color: #c084fc; }
+    .fn  { color: #60a5fa; }
+    .str { color: #86efac; }
+    .cmt { color: #4a6280; font-style: italic; }
+    .num { color: #fb923c; }
+
+    /* ── Callouts ── */
+    .callout {
+      border-left: 3px solid var(--blue); background: var(--blue-l);
+      border-radius: 0 8px 8px 0; padding: 14px 16px; margin: 20px 0;
+    }
+    .callout.amber { border-color: var(--amber); background: #2a1f00; }
+    .callout.green { border-color: var(--green); background: #0a2010; }
+    .callout p { margin: 0; }
+    .callout-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+    .callout .callout-title { color: var(--blue-d); }
+    .callout.amber .callout-title { color: var(--amber); }
+    .callout.green .callout-title { color: var(--green); }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 20px; font-size: 13px; }
+    th { text-align: left; color: var(--muted); font-weight: 600; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    td { padding: 8px 12px; border-bottom: 1px solid var(--border2); color: var(--muted); vertical-align: top; }
+    td strong { color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+
+    /* ── Pill badges ── */
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 99px; letter-spacing: .03em;
+    }
+    .badge-blue  { background: var(--blue-l); color: var(--blue-d); border: 1px solid #2d4a7a; }
+    .badge-green { background: #0a2010; color: var(--green); border: 1px solid #1a4020; }
+    .badge-amber { background: #2a1f00; color: var(--amber); border: 1px solid #4a3800; }
+
+    /* ── Stat grid ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 20px 0; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+    }
+    .stat-val { font-size: 26px; font-weight: 700; color: var(--blue-d); letter-spacing: -.02em; }
+    .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Pipeline ── */
+    .pipeline { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+    .pipe-step {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 12px 0;
+    }
+    .pipe-step + .pipe-step { border-top: 1px solid var(--border2); }
+    .pipe-num {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+      background: var(--blue-l); border: 1px solid var(--blue);
+      color: var(--blue-d); font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pipe-body { flex: 1; }
+    .pipe-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .pipe-desc { font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-logo">Lattice<span>Lines</span></div>
+
+  <div class="nav-section">Overview</div>
+  <a href="#problem">The Problem</a>
+  <a href="#answers">Known Answers</a>
+
+  <div class="nav-section">Domain</div>
+  <a href="#geometry">Geometry Model</a>
+  <a href="#shapes">Shapes & Lengths</a>
+
+  <div class="nav-section">Tools</div>
+  <a href="#build">Building & Running</a>
+  <a href="#tile-explorer">Tile Explorer</a>
+  <a href="#curve-explorer">Curve Explorer</a>
+
+  <div class="nav-section">Implementation</div>
+  <a href="#encoding">Data Encoding</a>
+  <a href="#compression">Compression</a>
+  <a href="#stack">Languages & Libraries</a>
+</nav>
+
+<main>
+
+  <!-- ── Hero ── -->
+  <section id="overview">
+    <h1>Lattice Lines
+      <span class="sub">A combinatorics &amp; geometry explorer</span>
+    </h1>
+    <p>
+      Lattice Lines is a computational project that enumerates and visualises every line segment
+      that can be drawn between any two points of an <strong>n×n integer point grid</strong>.
+      It answers a set of combinatorics questions about those segments and provides two
+      interactive browser-based visualisations to explore the results.
+    </p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-val">4 950</div>
+        <div class="stat-lbl">segments in a 10×10 grid</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">√5</div>
+        <div class="stat-lbl">most-common length (10×10)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">297 KB</div>
+        <div class="stat-lbl">lattice.html (all 29 grids)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Problem ── -->
+  <section id="problem">
+    <h2>The Problem</h2>
+    <p>
+      Arrange 100 points in a 10×10 square grid where adjacent points are distance 1 apart.
+      Draw a line between every pair of points.
+    </p>
+    <ol>
+      <li>What is the side length of the <strong>biggest square</strong> that can be formed?</li>
+      <li><strong>How many lines</strong> are drawn in total?</li>
+      <li>How many of those lines have <strong>length exactly 1</strong>?</li>
+      <li>If you replace "1" with another number, can you get a <strong>bigger count</strong> for question 3?</li>
+    </ol>
+    <p>
+      Question 4 is the interesting one — it asks which length is most common among all the segments.
+      Intuitively you might guess short lengths win, but the answer is a knight-move diagonal.
+    </p>
+  </section>
+
+  <!-- ── Answers ── -->
+  <section id="answers">
+    <h2>Known Answers</h2>
+    <table>
+      <thead><tr><th>Question</th><th>Answer</th><th>Reasoning</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Q1 — Biggest square</strong></td>
+          <td><code>side = 9</code></td>
+          <td>The bounding square of the 10×10 grid has corners at the four corners of the grid. Side length = cols − 1 = 9.</td>
+        </tr>
+        <tr>
+          <td><strong>Q2 — Total lines</strong></td>
+          <td><code>4 950</code></td>
+          <td>C(100, 2) = 100 × 99 / 2 = 4 950.</td>
+        </tr>
+        <tr>
+          <td><strong>Q3 — Unit segments</strong></td>
+          <td><code>180</code></td>
+          <td>90 horizontal (9 per row × 10 rows) + 90 vertical (9 per column × 10 columns).</td>
+        </tr>
+        <tr>
+          <td><strong>Q4 — Winning length</strong></td>
+          <td><code>√5 → 288</code></td>
+          <td>Length √5 (squared distance 5) corresponds to the knight-move vectors (±1, ±2) and (±2, ±1). These have more placements than any other length including 1.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout green">
+      <div class="callout-title">Why √5 wins</div>
+      <p>
+        Length √5 has 4 distinct shapes on a 10×10 grid: vectors (−2,1), (−1,2), (1,2), (2,1).
+        Each shape tiles the grid densely. The four shapes together produce 288 placements,
+        beating the 180 unit segments. On a 30×30 grid √5 has 3 248 placements and remains
+        the dominant length.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Geometry ── -->
+  <section id="geometry">
+    <h2>Geometry Model</h2>
+    <h3>Points and segments</h3>
+    <p>
+      Points are plain integer coordinates. Segments are unordered pairs of points.
+      All distance calculations use <strong>squared distances</strong> — integer arithmetic with no floating point.
+      A "length" is always referred to internally by its squared value (e.g. <code>squaredLength = 5</code> for √5).
+      Floating point only appears when formatting output for humans.
+    </p>
+    <pre><code><span class="kw">data class</span> <span class="fn">Point</span>(<span class="kw">val</span> x: Int, <span class="kw">val</span> y: Int)
+
+<span class="kw">fun</span> Point.<span class="fn">squaredDistanceTo</span>(other: Point): Int {
+    <span class="kw">val</span> dx = other.x - x
+    <span class="kw">val</span> dy = other.y - y
+    <span class="kw">return</span> dx*dx + dy*dy
+}
+
+<span class="kw">data class</span> <span class="fn">Segment</span>(<span class="kw">val</span> a: Point, <span class="kw">val</span> b: Point) {
+    <span class="kw">val</span> squaredLength: Int <span class="kw">get</span>() = a.<span class="fn">squaredDistanceTo</span>(b)
+}</code></pre>
+
+    <h3>Grid enumeration</h3>
+    <p>
+      <code>gridPoints(rows, cols)</code> returns all points in row-major order (y outer, x inner).
+      <code>allSegments(points)</code> produces all C(n, 2) pairs using a double loop with <code>j &gt; i</code>.
+    </p>
+    <div class="callout amber">
+      <div class="callout-title">Critical invariant</div>
+      <p>
+        Because points are sorted by (y, x), the vector <strong>b − a</strong> from any segment produced
+        by <code>allSegments</code> always satisfies <code>dy ≥ 0</code>, and when <code>dy = 0</code>,
+        <code>dx &gt; 0</code>. This is exactly the canonical form used by <code>shapesForSquaredLength</code>,
+        so the two functions are always consistent. Breaking this assumption would cause
+        <code>shapeIndex.getValue(key)</code> to throw.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Shapes ── -->
+  <section id="shapes">
+    <h2>Shapes &amp; Lengths</h2>
+    <h3>What is a shape?</h3>
+    <p>
+      Two segments have the same <strong>shape</strong> if one is a translation of the other —
+      same direction and length, different position. A shape is identified by its canonical
+      step vector <code>(dx, dy)</code>.
+    </p>
+    <p>
+      The number of shapes for a given squared length depends on how many ways the integer
+      can be written as a sum of two squares:
+    </p>
+    <table>
+      <thead><tr><th>Squared length</th><th>Shapes</th><th>Vectors</th></tr></thead>
+      <tbody>
+        <tr><td><code>1</code> (length 1)</td><td>2</td><td>(1,0) horizontal · (0,1) vertical</td></tr>
+        <tr><td><code>2</code> (length √2)</td><td>2</td><td>(−1,1) · (1,1) — the two diagonals</td></tr>
+        <tr><td><code>5</code> (length √5)</td><td>4</td><td>(−2,1) · (−1,2) · (1,2) · (2,1) — knight moves</td></tr>
+        <tr><td><code>25</code> (length 5)</td><td>4</td><td>(0,5) · (5,0) · (−3,4) · (3,4)</td></tr>
+        <tr><td><code>1105</code> (length √1105)</td><td>16</td><td>4 decompositions × 2 signs each for dx</td></tr>
+      </tbody>
+    </table>
+    <h3>Unused shapes</h3>
+    <p>
+      Some shapes exist mathematically but have <strong>zero placements</strong> on a given grid —
+      the step vector would place the endpoint outside the grid boundaries.
+      The tile explorer greys these out so they are visible but clearly inactive.
+    </p>
+  </section>
+
+  <!-- ── Build ── -->
+  <section id="build">
+    <h2>Building &amp; Running</h2>
+    <p>
+      The project uses the <strong>Gradle wrapper</strong>. Never invoke <code>gradle</code> directly.
+      All commands below are run from the project root.
+    </p>
+    <pre><code><span class="cmt"># Compile and run all tests</span>
+./gradlew build
+
+<span class="cmt"># Print the answers to the 4 domain questions</span>
+./gradlew run
+
+<span class="cmt"># Run tests only</span>
+./gradlew test
+
+<span class="cmt"># Run a single named test</span>
+./gradlew test --tests <span class="str">"com.fran.latticelines.LatticeAnalysisTest.unit segment count on 10x10 grid is 180"</span>
+
+<span class="cmt"># Generate the tile explorer (lattice.html)</span>
+./gradlew generateViz
+
+<span class="cmt"># Generate the curve explorer (curve.html)</span>
+./gradlew generateCurve
+
+<span class="cmt"># Remove compiled classes and build outputs</span>
+./gradlew clean</code></pre>
+    <p>
+      Both <code>generateViz</code> and <code>generateCurve</code> write their HTML files to the
+      <strong>project root</strong> (not the <code>app/</code> subdirectory). Open either file
+      directly in a browser — no web server required.
+    </p>
+    <div class="callout">
+      <div class="callout-title">Browser requirement for lattice.html</div>
+      <p>
+        <code>lattice.html</code> uses the <code>DecompressionStream</code> API to decompress
+        its embedded data at load time. This requires Chrome 80+, Firefox 113+, or Safari 16.4+.
+        <code>curve.html</code> has no such requirement.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Tile Explorer ── -->
+  <section id="tile-explorer">
+    <h2>Tile Explorer — <code>lattice.html</code></h2>
+    <p>
+      An interactive page that lets you browse every segment in the grid, organised by length and shape.
+      Covers all grid sizes from 2×2 to 30×30; opens on 10×10 by default.
+    </p>
+    <h3>Toolbar</h3>
+    <ul>
+      <li><strong>Grid dropdown</strong> — switch between any grid size 2×2 → 30×30. Automatically selects the length with the most segments for the new grid.</li>
+      <li><strong>Length dropdown</strong> — every distinct segment length in the current grid, ordered by ascending squared distance, with segment count and shape count shown.</li>
+      <li><strong>Mode toggle</strong> — switch between <em>All segments</em> and <em>Shapes</em> mode.</li>
+      <li><strong>Random</strong> — jump to a random segment tile (disabled in Shapes mode).</li>
+    </ul>
+    <h3>All segments mode</h3>
+    <p>
+      One tile per placement of the selected length on the grid. Each tile shows the grid
+      (as a bounding box for dense grids, or full grid lines for sparse ones) with the
+      segment drawn over it. Tiles are colour-coded by shape — all placements of the
+      same shape share a colour.
+    </p>
+    <h3>Shapes mode</h3>
+    <p>
+      One tile per canonical shape for the selected length. The segment is drawn at a
+      consistent scale anchored at a corner, so all shapes fan out visually for easy
+      comparison. Shapes with zero placements on the current grid are greyed out, and
+      the header reports how many are unused.
+    </p>
+    <h3>Detail panel</h3>
+    <p>
+      Clicking any tile opens the full-detail view: a larger SVG showing the segment in
+      context (all grid dots visible), plus the exact coordinates, step vector, and length.
+      Prev / Next buttons step through all tiles in order.
+    </p>
+    <h3>Stats bar</h3>
+    <p>
+      At the bottom of the tile panel: two side-by-side tables showing the <strong>top 5</strong>
+      and <strong>bottom 5</strong> lengths by segment count for the current grid.
+      The currently selected length is highlighted in blue. Updates on every grid or length change.
+    </p>
+  </section>
+
+  <!-- ── Curve Explorer ── -->
+  <section id="curve-explorer">
+    <h2>Curve Explorer — <code>curve.html</code></h2>
+    <p>
+      A line chart showing the segment count for every distinct length, for a chosen grid size.
+      Switch grid sizes with a dropdown; both axes rescale so the dominant length always peaks
+      near the top of the chart.
+    </p>
+    <ul>
+      <li>X axis: actual segment length (√squaredLength as a floating-point number)</li>
+      <li>Y axis: number of segments at that length</li>
+      <li>Hover: snaps to the nearest data point and shows a tooltip with the exact length notation (e.g. √5 ≈ 2.236) and count</li>
+    </ul>
+    <p>
+      This file embeds only <strong>counts</strong> (no segment coordinates), so it is small
+      (~52 KB) and has no decompression requirement.
+    </p>
+  </section>
+
+  <!-- ── Encoding ── -->
+  <section id="encoding">
+    <h2>Data Encoding</h2>
+    <p>
+      <code>lattice.html</code> embeds all segment data for 29 grid sizes.
+      Storing this naïvely as JSON would produce a ~31 MB file. Two optimisations bring it to ~5.6 MB
+      before compression.
+    </p>
+
+    <h3>Optimisation 1 — anchor-only storage</h3>
+    <p>
+      Every segment belongs to a shape with a known step vector <code>(dx, dy)</code>.
+      Instead of storing both endpoints <code>[x1, y1, x2, y2]</code>, only the
+      <strong>anchor point</strong> <code>[x1, y1]</code> is stored.
+      The endpoint is reconstructed as <code>(x1 + dx, y1 + dy)</code> in JS at load time.
+      This halves the coordinate data.
+    </p>
+
+    <h3>Optimisation 2 — base-36 flat strings</h3>
+    <p>
+      Coordinates are integers 0–29 (for the largest 30×30 grid).
+      Base-36 maps 0–9 to <code>'0'</code>–<code>'9'</code> and 10–35 to <code>'a'</code>–<code>'z'</code>,
+      so every value 0–29 fits in a <strong>single character</strong> (<code>'0'</code>–<code>'t'</code>).
+      Each segment's anchor becomes exactly 2 characters with no brackets, commas, or spaces.
+      All placements for one shape are concatenated into a single flat string.
+    </p>
+
+    <h3>Before and after</h3>
+    <table>
+      <thead><tr><th>Format</th><th>Example (sq=1, shape (1,0), 3×3 grid)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Naïve JSON</strong></td>
+          <td><code>[[0,0,1,0],[1,0,2,0],[0,1,1,1],[1,1,2,1],[0,2,1,2],[1,2,2,2]]</code></td>
+        </tr>
+        <tr>
+          <td><strong>Encoded</strong></td>
+          <td><code>"001001110212"</code> — 2 chars per segment, no separators</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The JS decoder iterates the string two characters at a time:
+    </p>
+    <pre><code><span class="kw">for</span> (<span class="kw">var</span> j = <span class="num">0</span>; j &lt; str.length; j += <span class="num">2</span>) {
+    <span class="kw">var</span> ax = b36[str[j]],  ay = b36[str[j+<span class="num">1</span>]];
+    result[j/<span class="num">2</span>] = [ax, ay, ax + dx, ay + dy];
+}</code></pre>
+  </section>
+
+  <!-- ── Compression ── -->
+  <section id="compression">
+    <h2>Compression</h2>
+    <p>
+      After encoding, the Kotlin build step compresses the JSON with <strong>GZip</strong>
+      and base64-encodes the binary result so it can be embedded as a string literal in HTML.
+      The browser decompresses it at page load using the
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/DecompressionStream"><code>DecompressionStream</code></a> API.
+    </p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-num">1</div>
+        <div class="pipe-body">
+          <div class="pipe-title">Kotlin serialisation</div>
+          <div class="pipe-desc">All 29 grid sizes enumerated, segments encoded as base-36 anchor strings → JSON string ~5.6 MB</div>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">2</div>
+        <div class="pipe-body">
+          <div class="pipe-title">GZip compression</div>
+          <div class="pipe-desc">Repetitive flat-string structure compresses at ~26× → ~212 KB binary</div>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">3</div>
+        <div class="pipe-body">
+          <div class="pipe-title">Base64 encoding</div>
+          <div class="pipe-desc">Binary → text-safe ASCII string (+33% overhead) → ~283 KB embedded in HTML</div>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">4</div>
+        <div class="pipe-body">
+          <div class="pipe-title">Browser decompression</div>
+          <div class="pipe-desc"><code>atob()</code> → <code>Uint8Array</code> → <code>DecompressionStream('gzip')</code> → <code>JSON.parse</code> → decode anchor strings → ready</div>
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Stage</th><th>Size</th></tr></thead>
+      <tbody>
+        <tr><td>Naïve JSON (4 coords per segment)</td><td><strong>~31 MB</strong></td></tr>
+        <tr><td>Anchor-only base-36 JSON</td><td><strong>~5.6 MB</strong> — 5.5× smaller</td></tr>
+        <tr><td>After GZip</td><td><strong>~212 KB</strong></td></tr>
+        <tr><td>After base64</td><td><strong>~283 KB</strong></td></tr>
+        <tr><td>Final HTML file</td><td><strong>297 KB</strong> — 105× smaller than naïve</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Stack ── -->
+  <section id="stack">
+    <h2>Languages &amp; Libraries</h2>
+    <h3>Backend (build-time)</h3>
+    <table>
+      <thead><tr><th>Technology</th><th>Version</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Kotlin</strong> <span class="badge badge-blue">JVM</span></td>
+          <td><code>2.1.20</code></td>
+          <td>All domain logic, data serialisation, HTML generation. Chosen for concise data classes and null-safe idiomatic iteration.</td>
+        </tr>
+        <tr>
+          <td><strong>JVM</strong></td>
+          <td><code>21</code></td>
+          <td>Runtime. <code>java.util.zip.GZIPOutputStream</code> and <code>java.util.Base64</code> provide compression with no extra dependencies.</td>
+        </tr>
+        <tr>
+          <td><strong>Gradle</strong> <span class="badge badge-amber">wrapper</span></td>
+          <td><code>9.5.1</code></td>
+          <td>Build system. Custom <code>JavaExec</code> tasks for <code>generateViz</code> and <code>generateCurve</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Guava</strong></td>
+          <td>—</td>
+          <td>Declared dependency from project scaffolding; currently unused.</td>
+        </tr>
+        <tr>
+          <td><strong>JUnit Jupiter 5</strong></td>
+          <td>—</td>
+          <td>Unit tests for grid enumeration, segment counts, and shape functions.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Frontend (runtime)</h3>
+    <table>
+      <thead><tr><th>Technology</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Vanilla JavaScript</strong> <span class="badge badge-green">no framework</span></td>
+          <td>All interactivity — dropdowns, tile rendering, detail panel, stats tables. ES5-compatible style (<code>var</code>, <code>function</code>) except for <code>async/await</code> in the decompression loader.</td>
+        </tr>
+        <tr>
+          <td><strong>SVG</strong></td>
+          <td>All visualisation: grid lines, segment tiles, detail panels, shape tiles. Created programmatically via <code>document.createElementNS</code> — no canvas, no WebGL.</td>
+        </tr>
+        <tr>
+          <td><strong>DecompressionStream API</strong></td>
+          <td>Native browser GZip decompression. No JavaScript decompression library needed.</td>
+        </tr>
+        <tr>
+          <td><strong>CSS</strong></td>
+          <td>Dark theme using CSS custom properties (variables). Tailwind-inspired palette: <code>#0f172a</code> background, <code>#1e293b</code> surface, <code>#3b82f6</code> accent blue.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="callout-title">Design principle</div>
+      <p>
+        Both visualisations are <strong>fully self-contained single HTML files</strong> with no external
+        dependencies, no CDN requests, and no build step on the frontend side. They work by
+        opening the file directly in a browser.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var navLinks = document.querySelectorAll('nav a');
+  var sections = document.querySelectorAll('main section');
+
+  function setActive(id) {
+    navLinks.forEach(function (a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+    });
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) setActive(e.target.id);
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(function (s) { observer.observe(s); });
+}());
+</script>
+</body>
+</html>
